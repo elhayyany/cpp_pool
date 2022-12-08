@@ -1,0 +1,93 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Form.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ael-hayy <ael-hayy@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/23 13:24:44 by ael-hayy          #+#    #+#             */
+/*   Updated: 2022/08/30 15:08:52 by ael-hayy         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "Form.hpp"
+#include "Bureaucrat.hpp"
+
+Form::Form(/* args */) : _name("shahada"), _grade_RTS(15), _grade_RTE(7)
+{
+    _is_singed = 0;
+}
+Form::Form(const std::string name, const int grade_RTS , const int grade_RTE)
+: _name(name), _grade_RTS(grade_RTS), _grade_RTE(grade_RTE)
+{
+    if ( _grade_RTE < 0 || _grade_RTS < 0)
+        throw GradeTooHighException();
+    if (_grade_RTE > 150 || _grade_RTS > 150 )
+        throw GradeTooLowException();
+    _is_singed = 0;
+}
+
+Form::Form(Form &f) : _name(f._name), _is_singed(f._is_singed), _grade_RTS(f._grade_RTS), _grade_RTE(f._grade_RTE)
+{
+}
+Form Form::operator=(Form &f)
+{
+    Form ff(f);
+    return (ff);
+}
+
+Form::~Form()
+{
+}
+
+void    Form::beSigned(Bureaucrat& c)
+{
+    try
+    {
+        if (c.get_Grade() > _grade_RTS )
+            throw GradeTooLowException();
+        _is_singed = 1;
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+    
+}
+
+std::ostream& operator<<(std::ostream& out, Form& c)
+{
+    std::string si;
+
+    if (c.getStatus())
+        si = "signed";
+    else
+        si = "unsigned";
+    out<<c.getName()<<" is "<<si<<" and the grade requared to signed it is "
+    <<c.getGrade_RTS()<<"and the greade requared to execut it is "<<c.getGrade_RTE()<<std::endl;
+    return (out);
+}
+const char * Form::GradeTooLowException::what () const _NOEXCEPT
+{
+    return ("Grade too low Exeption");
+}
+const char *Form::GradeTooHighException::what () const _NOEXCEPT
+{
+    return "Grade Too High Exception";
+}
+std::string Form::getName()
+{
+    return (_name);
+}
+int         Form::getStatus()
+{
+    return (_is_singed);
+}
+int         Form::getGrade_RTS()
+{
+    return (_grade_RTS);
+}
+int         Form::getGrade_RTE()
+{
+    return (_grade_RTE);
+}
